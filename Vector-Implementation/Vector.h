@@ -43,7 +43,7 @@ public:
 	T operator[](size_t index) const;
 
 	//Returns index correspondig to the element
-	size_t operator[](T element) const;
+	size_t get_index(T element) const;
 
 	//Prints the vector
 	void print() const;
@@ -53,9 +53,6 @@ public:
 
 	//Gets the capacity of the vector
 	void get_capacity() const;
-
-	//operator << for output
-	friend std::ostream& operator<< (std::ostream& output, const Vector<T>& other);
 
 private:
 	//Data members
@@ -91,14 +88,14 @@ Vector<T>::Vector(const Vector<T>& other)
 
 //Operator = 
 template <typename T> 
-Vector<T>::Vector<T>& operator=(const Vector<T>& other)
+Vector<T>& Vector<T>:: operator=(const Vector<T>& other)
 {
 	if (this != &other)
 	{
 		this->destroy();
 		this->copy(other);
 	}
-	return this*;
+	return *this;
 }
 
 //Destructor
@@ -133,7 +130,8 @@ void Vector<T>::push_back(T element)
 	{
 		this->resize();
 	}
-	this->value[this->size] = element;
+	this->value[this->size - 1] = element;
+	
 }
 
 //Push element at any position
@@ -191,7 +189,7 @@ Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
 	{
 		temp[i] = this->value[i];
 	}
-	for (size_t i = this->size; , j = 0; i < this->size + other.size; i++, j++)
+	for (size_t i = this->size , j = 0; i < this->size + other.size; i++, j++)
 	{
 		temp[i] = other.value[j];
 	}
@@ -207,12 +205,20 @@ Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
 template <typename T>
 T Vector<T>::operator[](size_t index) const
 {
-	index > this->size ? return : return this->value[index];
+	if (index < this->size)
+	{
+		return this->value[index];
+	}
+	else
+	{
+		std::cout << "Wrong index";
+		return T(0);
+	}
 }
 
 //Returns index correspondig to the element
 template <typename T>
-size_t Vector<T>::operator[](T element) const
+size_t Vector<T>::get_index(T element) const
 {
 	for (size_t i = 0; i < this->size; i++)
 	{
@@ -221,7 +227,7 @@ size_t Vector<T>::operator[](T element) const
 			return i;
 		}
 	}
-	return;
+	return -1;
 }
 
 //Prints the vector
@@ -232,6 +238,7 @@ void Vector<T>::print() const
 	{
 		std::cout << this->value[i] << " ";
 	}
+	std::cout << std::endl;
 }
 
 //Gets the current size of the vector
@@ -246,17 +253,6 @@ template <typename T>
 void Vector<T>::get_capacity() const
 {
 	std::cout << this->capacity << std::endl;
-}
-
-//operator << for output
-template <typename T>
-friend std::ostream& operator<< (std::ostream& output, const Vector<T>& other)
-{
-	for (size_t i = 0; i < other.size; i++)
-	{
-		output << other.value[i] << " ";
-	}
-	return output;
 }
 
 //Helper copy
