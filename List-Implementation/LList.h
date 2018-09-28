@@ -163,5 +163,5 @@ Node<T>* next()
 template <typename T>
 Node<T>* end()
 {
-	return NULL
+	return NULL;
 }
