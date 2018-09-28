@@ -13,7 +13,7 @@ public:
 	LList(const LList& other);
 	
 	//Overloading operator =
-	LList& operator=(const LList& other);
+	LList<T>& operator=(const LList<T>& other);
 
 	//Destructor
 	~LList();
@@ -104,11 +104,46 @@ LList<T>::LList(const LList& other)
 	this->copy_list(other);
 }
 
+//Overloading operator =
+template<typename T>
+LList<T>& LList<T>:: operator=(const LList<T>& other)
+{
+	if (this != &other)
+	{
+		this->destroy_list();
+		this->copy_list(other);
+	}
+	return *this;
+}
+
 //Destructor
 template <typename T>
 LList<T>::~LList()
 {
 	this->destroy_list();
+}
+
+//Returns the address of the first node
+template <typename T>
+Node<T>* LList<T>::begin()
+{
+	this->current = this->first;
+	return this->first;
+}
+
+//Position on the next node
+template <typename T>
+Node<T>* LList<T>::next()
+{
+	this->current = this->current->next;
+	return this->current;
+}
+
+//Recognize the end of the linked list
+template <typename T>
+Node<T>* LList<T>::end()
+{
+	return NULL;
 }
 
 //Helper copy
@@ -118,7 +153,8 @@ void LList<T>::copy_list(const LList& other)
 	Node<T> *ptr_new;
 	Node<T> *current;
 
-	if (this->first != NULL) : destroy_list() {}//kostaa
+	if (this->first != NULL)
+		destroy_list();
 	if (other.first == NULL)
 	{
 		this->first = NULL;
@@ -143,25 +179,3 @@ void LList<T>::copy_list(const LList& other)
 	this->len = other.len;
 }
 
-//Returns the address of the first node
-template <typename T>
-Node<T>* begin()
-{
-	this->current = this->first;
-	return this->first;
-}
-
-//Position on the next node
-template <typename T>
-Node<T>* next()
-{
-	this->current = this->current->next;
-	return this->current;
-}
-
-//Recognize the end of the linked list
-template <typename T>
-Node<T>* end()
-{
-	return NULL;
-}
