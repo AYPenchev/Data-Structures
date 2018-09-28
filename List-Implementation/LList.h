@@ -142,3 +142,26 @@ void LList<T>::copy_list(const LList& other)
 	}
 	this->len = other.len;
 }
+
+//Returns the address of the first node
+template <typename T>
+Node<T>* begin()
+{
+	this->current = this->first;
+	return this->first;
+}
+
+//Position on the next node
+template <typename T>
+Node<T>* next()
+{
+	this->current = this->current->next;
+	return this->current;
+}
+
+//Recognize the end of the linked list
+template <typename T>
+Node<T>* end()
+{
+	return NULL
+}
