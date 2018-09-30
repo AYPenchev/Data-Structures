@@ -46,7 +46,7 @@ public:
 	Node<T> get_value(size_t index);
 
 	//Returns element corresponding to the index
-	//Node<T> LList::get_value();
+	Node<T> get_value();
 	
 	//Changes the value of node
 	void set_value(Node<T> element, size_t index);
@@ -61,7 +61,7 @@ public:
 	size_t size() const;
 
 	//Output
-	friend std::ostream& operator<< (std::ostream& output, const LList& other);
+	friend std::ostream& operator<< (std::ostream& output, const LList<T>& other);
 	
 private:
 	//Pointer to first node
@@ -83,7 +83,7 @@ private:
 	void destroy_list();
 
 	//Returns the address of node by given index
-	Node<T>* locate(size_t);
+	Node<T>* locate(size_t index);
 };
 
 //Default constructor
@@ -146,6 +146,157 @@ Node<T>* LList<T>::end()
 	return NULL;
 }
 
+//Push element in front
+template<typename T>
+void LList<T>::push_front(Node<T> element)
+{
+	if (this->first != NULL)
+		this->first = new Node<T>(element, this->first);
+	else
+	{
+		this->first = new Node<T>(element, this->first);
+		this->last = this->first;
+	}
+	this->++len;
+	return;
+}
+
+template<typename T>
+void LList<T>::push_back(Node<T> element)
+{
+	if (this->first == NULL)
+	{
+		this->first = new Node<T>(element);
+		this->last = this->first;
+		this->++len;
+		return;
+	}
+	//Adds new node after the last one
+	Node* last_node = this->last;
+	last_node->next = new Node<T>(element);
+	this->last = last_node->next;
+	this->++len;
+}
+
+template<typename T>
+void LList<T>::pop_front()
+{
+	if (this->first == NULL)
+		return;
+	else if (this->first->next == NULL)
+		this->last == NULL;
+	Node<T>* ptr_node = this->first;
+	this->first = this->first->next;
+	delete ptr_node;
+	this->--len;
+}
+
+template<typename T>
+void LList<T>::pop_back()
+{
+	if (this->first == NULL) return;
+	else if (this->first->next == NULL)
+	{
+		delete this->first;
+		this->first = NULL;
+		this->last = NULL;
+		this->--len;
+		return;
+	}
+	Node* ptr_last = this->first;
+	Node* ptr_prev;
+	while (ptr_last->next != NULL)
+	{
+		ptr_prev = ptr_last;
+		ptr_last = ptr_last->next;
+	}
+	this->last = ptr_prev;
+	this->last->next = NULL;
+	delete ptr_last;
+	this->--len;
+}
+
+template<typename T>
+void LList<T>::delete_node(Node<T> element)
+{
+	if (this->first == NULL) return;
+	if (this->first->value == element)
+	{
+		Node<T>* ptr_del = this->first;
+		if (this->first->next != NULL)
+			this->first = this->first->next;
+		else
+		{
+			this->first = NULL;
+			this->last = NULL;
+		}
+		delete ptr_del;
+		this->--len;
+		return;
+	}
+	Node<T>* current = this->first;
+	while (current->next != NULL && current->next->value != element)
+		current = current->next;
+	if (current->next != NULL)
+	{
+		Node<T>* ptr_del = current->next;
+		current->next = current->next->next;
+		delete ptr_del;
+		this->--len;
+		return;
+	}
+}
+
+template<typename T>
+Node<T> LList<T>::get_value(size_t index)
+{
+	Node<T>* ptr_pos = locate(index);
+	assert(ptr_pos != NULL);
+	return ptr_pos->value;
+}
+
+template<typename T>
+Node<T> LList<T>::get_value()
+{
+	assert(this->current != NULL);
+	return this->current->value;
+}
+
+template<typename T>
+void LList<T>::set_value(Node<T> element, size_t index)
+{
+	Node<T>* ptr_inx = location(index);
+	assert(ptr_inx != NULL);
+	ptr_inx->value = element;
+}
+
+template<typename T>
+bool LList<T>::find(Node<T> element)
+{
+	if (this->first == NULL)
+		return false;
+	bool found = false;
+	Node<T>* ptr_node = this->first;
+	while (ptr_node != NULL && !found)
+		if (ptr_node->value != element)
+			ptr_node = ptr_node->next;
+		else
+			found = true;
+	return found;
+}
+
+template<typename T>
+bool LList<T>::is_empty() const
+{
+	return this->first = NULL;
+}
+
+template<typename T>
+size_t LList<T>::size() const
+{
+	return this->len;
+}
+
 //Helper copy
 template <typename T>
 void LList<T>::copy_list(const LList& other)
@@ -177,5 +328,28 @@ void LList<T>::copy_list(const LList& other)
 		this->current = this->current->next;
 	}
 	this->len = other.len;
+}
+
+template<typename T>
+void LList<T>::destroy_list()
+{
+	Node<T>* ptr_node;
+	while (this->first != NULL)
+	{
+		ptr_node = this->first;
+		this->first = this->first->next;
+		delete ptr_node;
+	}
+	this->last = NULL;
+	this->len = 0;
+}
+
+template<typename T>
+Node<T>* LList<T>::locate(size_t index)
+{
+	Node<T>* ptr_node = this->first;
+	for (size_t i = 1; (i < index && ptr_node != NULL); ++i)
+		ptr_node = ptr_node->next;
+	return ptr_node;
 }
 
